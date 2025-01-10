@@ -1,45 +1,3 @@
-<!-- <script setup>
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import Chirp from "@/Components/Chirp.vue";
-import InputError from "@/Components/InputError.vue";
-import PrimaryButton from "@/Components/PrimaryButton.vue";
-import { useForm, Head } from "@inertiajs/vue3";
-
-defineProps(["chirps"]);
-
-const form = useForm({
-    message: "",
-});
-</script>
-
-<template>
-    <Head title="Chirps" />
-
-    <AuthenticatedLayout>
-        <div class="max-w-2xl mx-auto p-4 sm:p-6 lg:p-8">
-            <form
-                @submit.prevent="
-                    form.post(route('chirps.store'), {
-                        onSuccess: () => form.reset(),
-                    })
-                "
-            >
-                <textarea
-                    v-model="form.message"
-                    placeholder="What's on your mind?"
-                    class="block w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"
-                ></textarea>
-                <InputError :message="form.errors.message" class="mt-2" />
-                <PrimaryButton class="mt-4">Chirp</PrimaryButton>
-            </form>
-
-            <div class="mt-6 bg-white shadow-sm rounded-lg divide-y">
-                <Chirp v-for="chirp in chirps" :key="chirp.id" :chirp="chirp" />
-            </div>
-        </div>
-    </AuthenticatedLayout>
-</template> -->
-
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import Chirp from "@/Components/Chirp.vue";
@@ -67,9 +25,8 @@ const generateAIChirps = async () => {
     try {
         const response = await axios.post(route("chirps.generate"));
         console.log("AI Chirps response:", response.data);
-        aiChirps.value = response.data.chirps;
+        aiChirps.value = cleanChirps(response.data.chirps);
         showModal.value = true;
-        console.log("showModal after change:", showModal.value);
     } catch (error) {
         console.error("Error generating chirps:", error);
     } finally {
@@ -77,10 +34,14 @@ const generateAIChirps = async () => {
     }
 };
 
+const cleanChirps = (chirps) => {
+    return chirps.map((chirp) => chirp.replace(/^\d+\.\s*/, ""));
+};
+
 // Funktion för att posta ett valt chirp
-const postAIChirp = async (chirp) => {
+const postAIChirp = (chirp) => {
     form.message = chirp;
-    await form.post(route("chirps.store"), {
+    form.post(route("chirps.store"), {
         onSuccess: () => {
             form.reset();
             showModal.value = false;
@@ -111,7 +72,7 @@ const postAIChirp = async (chirp) => {
                     <PrimaryButton>Chirp</PrimaryButton>
                     <button
                         type="button"
-                        @click="generateAIChirps"
+                        @click.prevent="generateAIChirps"
                         :disabled="isGenerating"
                         class="bg-white-500 text-black px-4 py-2 rounded shadow hover:bg-grey-700 disabled:opacity-50"
                     >
@@ -127,25 +88,28 @@ const postAIChirp = async (chirp) => {
         </div>
 
         <!-- Modal för att visa AI-genererade chirps -->
-        <Modal v-if="showModal" :show="showModal" @close="showModal = false">
-            <template #title>Generated AI Chirps</template>
-            <template #content>
-                <div class="space-y-4">
-                    <div
-                        v-for="(chirp, index) in aiChirps"
-                        :key="index"
-                        class="p-4 bg-gray-100 rounded shadow"
+        <Modal :show="showModal">
+            <div class="space-y-4">
+                <div
+                    v-for="(chirp, index) in aiChirps"
+                    :key="index"
+                    class="p-4 bg-gray-100 rounded shadow"
+                >
+                    <p>{{ chirp }}</p>
+                    <button
+                        @click="postAIChirp(chirp)"
+                        class="mt-2 bg-indigo-500 text-white px-4 py-2 rounded shadow hover:bg-indigo-700"
                     >
-                        <p>{{ chirp }}</p>
-                        <button
-                            @click="postAIChirp(chirp)"
-                            class="mt-2 bg-indigo-500 text-white px-4 py-2 rounded shadow hover:bg-indigo-700"
-                        >
-                            Post this Chirp
-                        </button>
-                    </div>
+                        Post this Chirp
+                    </button>
                 </div>
-            </template>
+                <button
+                    @click="showModal = false"
+                    class="mt-2 bg-red-500 text-white px-4 py-2 rounded shadow hover:bg-indigo-700"
+                >
+                    Cancel
+                </button>
+            </div>
         </Modal>
     </AuthenticatedLayout>
 </template>
