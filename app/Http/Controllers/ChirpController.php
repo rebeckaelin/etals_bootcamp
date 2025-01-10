@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Services\OpenAIService; 
 
 class ChirpController extends Controller
 {
@@ -42,6 +43,15 @@ class ChirpController extends Controller
         $request->user()->chirps()->create($validated);
  
         return redirect(route('chirps.index'));
+    }
+    public function generate(OpenAIService $openAIService)
+    {
+        try {
+            $chirps = $openAIService->generateChirps(); // Använder OpenAIService för att generera chirps
+            return response()->json(['chirps' => $chirps]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 
     /**
