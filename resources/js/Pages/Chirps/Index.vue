@@ -86,7 +86,7 @@ const postAIChirp = (chirp) => {
 
         <!-- Modal för att visa AI-genererade chirps -->
         <Modal :show="showModal">
-            <div class="space-y-4">
+            <div class="space-y-4 p-4">
                 <div
                     v-for="(chirp, index) in aiChirps"
                     :key="index"
@@ -102,7 +102,6 @@ const postAIChirp = (chirp) => {
                 </div>
                 <div class="flex justify-end">
                     <button
-                        style="margin: 10px"
                         @click="showModal = false"
                         class="mt-2 bg-red-500 text-white px-4 py-2 rounded shadow hover:bg-red-700"
                     >
