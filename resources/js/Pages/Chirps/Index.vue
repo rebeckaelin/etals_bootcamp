@@ -100,12 +100,15 @@ const postAIChirp = (chirp) => {
                         Post this Chirp
                     </button>
                 </div>
-                <button
-                    @click="showModal = false"
-                    class="mt-2 bg-red-500 text-white px-4 py-2 rounded shadow hover:bg-red-700"
-                >
-                    Cancel
-                </button>
+                <div class="flex justify-end">
+                    <button
+                        style="margin: 10px"
+                        @click="showModal = false"
+                        class="mt-2 bg-red-500 text-white px-4 py-2 rounded shadow hover:bg-red-700"
+                    >
+                        Cancel
+                    </button>
+                </div>
             </div>
         </Modal>
     </AuthenticatedLayout>
