@@ -25,7 +25,7 @@ const generateAIChirps = async () => {
     try {
         const response = await axios.post(route("chirps.generate"));
         console.log("AI Chirps response:", response.data);
-        aiChirps.value = cleanChirps(response.data.chirps);
+        aiChirps.value = response.data.chirps;
         showModal.value = true;
     } catch (error) {
         console.error("Error generating chirps:", error);
@@ -34,13 +34,10 @@ const generateAIChirps = async () => {
     }
 };
 
-const cleanChirps = (chirps) => {
-    return chirps.map((chirp) => chirp.replace(/^\d+\.\s*/, ""));
-};
-
 // Funktion för att posta ett valt chirp
 const postAIChirp = (chirp) => {
-    form.message = chirp;
+    const cleanedChirp = chirp.replace(/^\d+\.\s*/, "");
+    form.message = cleanedChirp;
     form.post(route("chirps.store"), {
         onSuccess: () => {
             form.reset();
@@ -105,7 +102,7 @@ const postAIChirp = (chirp) => {
                 </div>
                 <button
                     @click="showModal = false"
-                    class="mt-2 bg-red-500 text-white px-4 py-2 rounded shadow hover:bg-indigo-700"
+                    class="mt-2 bg-red-500 text-white px-4 py-2 rounded shadow hover:bg-red-700"
                 >
                     Cancel
                 </button>
