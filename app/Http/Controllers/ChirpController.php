@@ -97,4 +97,49 @@ class ChirpController extends Controller
  
         return redirect(route('chirps.index'));
     }
+
+
+    //API
+    public function apiIndex()
+    {
+        return response()->json(Chirp::with('user:id,name')->latest()->get());
+    }
+
+    public function apiStore(Request $request)
+    {
+        $validated = $request->validate([
+            'message' => 'required|string|max:255',
+    ]);
+
+    $chirp = $request->user()->chirps()->create($validated);
+
+        return response()->json($chirp, 201);
+    }
+
+    public function apiShow(Chirp $chirp)
+    {
+        return response()->json($chirp);
+    }
+
+    public function apiUpdate(Request $request, Chirp $chirp)
+    {
+        Gate::authorize('update', $chirp);
+
+        $validated = $request->validate([
+        'message' => 'required|string|max:255',
+    ]);
+
+    $chirp->update($validated);
+
+        return response()->json($chirp);
+    }
+
+    public function apiDestroy(Chirp $chirp)
+    {
+        Gate::authorize('delete', $chirp);
+
+        $chirp->delete();
+
+        return response()->json(['message' => 'Chirp deleted successfully']);
+    }
 }
