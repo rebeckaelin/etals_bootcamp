@@ -110,6 +110,7 @@ class ChirpController extends Controller
         $validated = $request->validate([
             'message' => 'required|string|max:255',
     ]);
+    
 
     $chirp = $request->user()->chirps()->create($validated);
 
@@ -121,25 +122,57 @@ class ChirpController extends Controller
         return response()->json($chirp);
     }
 
+    // public function apiUpdate(Request $request, Chirp $chirp)
+    // {
+    //     Gate::authorize('update', $chirp);
+
+    //     $validated = $request->validate([
+    //     'message' => 'required|string|max:255',
+    // ]);
+
+    // $chirp->update($validated);
+
+    //     return response()->json($chirp);
+    // }
+
     public function apiUpdate(Request $request, Chirp $chirp)
-    {
+{
+    try {
+        // Authorize the update action
         Gate::authorize('update', $chirp);
 
+        // Validate the request
         $validated = $request->validate([
-        'message' => 'required|string|max:255',
-    ]);
+            'message' => 'required|string|max:255',
+        ]);
 
-    $chirp->update($validated);
+        // Update the chirp
+        $chirp->update($validated);
 
         return response()->json($chirp);
-    }
 
-    public function apiDestroy(Chirp $chirp)
-    {
+    } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+        return response()->json(['message' => 'You are not authorized to update this chirp.'], 403);
+    }
+}
+
+
+public function apiDestroy(Chirp $chirp)
+{
+    try {
+        // Authorize the delete action
         Gate::authorize('delete', $chirp);
 
+        // Proceed with deletion
         $chirp->delete();
 
         return response()->json(['message' => 'Chirp deleted successfully']);
+
+    } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+        return response()->json(['message' => 'You are not authorized to delete this chirp.'], 403);
     }
+}
+
+    
+
 }

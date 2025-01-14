@@ -90,12 +90,12 @@ const postAIChirp = (chirp) => {
                 <div
                     v-for="(chirp, index) in aiChirps"
                     :key="index"
-                    class="p-4 bg-gray-100 rounded shadow"
+                    class="p-4 bg-yellow-100 rounded shadow"
                 >
                     <p>{{ chirp }}</p>
                     <button
                         @click="postAIChirp(chirp)"
-                        class="mt-2 bg-indigo-500 text-white px-4 py-2 rounded shadow hover:bg-indigo-700"
+                        class="mt-3 bg-yellow-200 text-black px-4 py-2 rounded shadow hover:bg-yellow-300"
                     >
                         Post this Chirp
                     </button>
